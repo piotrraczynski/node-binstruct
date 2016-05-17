@@ -290,3 +290,39 @@ assert.doesNotThrow(function() {
 assert.throws(function() {
 	binstruct.def().uint16(0x0102).checkSize(7);
 });
+
+// Test buffer values
+var bufferTestDef = binstruct.def()
+	.buffer("a", 16);
+
+var bufferTestData = {
+	"a": new Buffer([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+}
+
+var bufferTestBuffer = bufferTestDef.pack(bufferTestData);
+var actualBufferTestData = bufferTestDef.unpack(bufferTestBuffer);
+
+assert.deepEqual(bufferTestData.a, actualBufferTestData.a);
+
+//Test string values
+var stringTestDef = binstruct.def()
+                        .string("a", 16)
+                        .string("b", "ConstValue")
+                        .byte("lenght_of_d")
+                        .string("d", "lenght_of_d");
+
+var d_value = "VariableLengthValue";
+var stringTestData = {
+    "a": "fixedLengthValue",
+    "lenght_of_d": d_value.length,
+    "d": d_value
+}
+
+var stringTestBuffer = stringTestDef.pack(stringTestData);
+var actualStringTestData = stringTestDef.unpack(stringTestBuffer);
+
+assert.equal(stringTestData.a, actualStringTestData.a);
+assert.equal("ConstValue", actualStringTestData.b);
+assert.equal(stringTestData.lenght_of_d, actualStringTestData.lenght_of_d);
+assert.equal(stringTestData.d, actualStringTestData.d);
+
